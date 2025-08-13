@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+  </head>
+  <body>
+    <h2>Pengenal Gambar dengan TensorFlow.js</h2>
+    <input type="file" accept="image/*" id="imageUpload" />
+    <br />
+    <img id="img" width="300" />
+    <p id="result"></p>
+
+    <script>
+      const imgElement = document.getElementById('img');
+      const resultElement = document.getElementById('result');
+      const imageUpload = document.getElementById('imageUpload');
+
+      let model;
+
+      async function loadModel() {
+        model = await mobilenet.load();
+        console.log("Model loaded.");
+      }
+
+      imageUpload.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        imgElement.src = URL.createObjectURL(file);
+        imgElement.onload = async () => {
+          const predictions = await model.classify(imgElement);
+          resultElement.innerText = predictions.map(p => 
+            `${p.className} - ${(p.probability * 100).toFixed(2)}%`
+          ).join('\n');
+        };
+      });
+
+      loadModel();
+    </script>
+  </body>
+</html>
